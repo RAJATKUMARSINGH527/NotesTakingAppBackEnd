@@ -4,7 +4,57 @@ const noteRouter = require('./routes/note.routes');
 const userRouter = require('./routes/user.routes');
 const cors = require('cors');
 
-const app = express();
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+// Swagger definition
+const swaggerDefinition = {
+    openapi: "3.0.0",
+    info: {
+      title: "Express API for Notes and Users",
+      version: "1.0.0",
+      description:
+        "This is a REST API application made with Express. It manages users and notes for a custom application.",
+      license: {
+        name: "Licensed Under MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+      contact: {
+        name: "API Support",
+        email: "support@example.com",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:8000",
+        description: "Development server",
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    }
+  };
+
+// Swagger options
+const options = {
+    swaggerDefinition,
+    apis: ["./routes/*.js"], // Path to the routes for API definitions
+  };
+  
+  const swaggerSpec = swaggerJSDoc(options);
+  
+  const app = express();
+  
+  // Swagger route
+  app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  
+
 
 //middleware to pass the request body
 app.use(express.json());
