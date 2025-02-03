@@ -58,7 +58,13 @@ const options = {
 
 //middleware to pass the request body
 app.use(express.json());
-app.use(cors());   //to allow cross origin requests from the frontend to the backend server
+app.use(cors(
+  {
+    origin: 'http://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
+  }
+));   //to allow cross origin requests from the frontend to the backend server
 //  because the frontend and backend are running on different ports so we need to allow the cross origin requests 
 //  from the frontend to the backend server so that the frontend can communicate with the backend server 
 
