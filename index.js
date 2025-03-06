@@ -71,22 +71,41 @@ app.use(express.urlencoded({ extended: false })); //to pass the form data from t
 //  because the frontend and backend are running on different ports so we need to allow the cross origin requests 
 //  from the frontend to the backend server so that the frontend can communicate with the backend server 
 
-const whitelist = [process.env.FRONTEND_URL, process.env.DEPLOYED_FE_URL];
+// const whitelist = [process.env.FRONTEND_URL, process.env.DEPLOYED_FE_URL];
+
+// const corsOptions = (req, callback) => {
+//   if (whitelist.indexOf(req.header("Origin")) !== -1) {
+//     callback(null, {
+//       origin: req.header("Origin"), //// Automatically reflects the request's origin if in the whitelist
+//       credentials: true,
+//       methods: "GET,HEAD,PATCH,POST,PUT,DELETE",
+//       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+//     }); // reflect (enable) the requested origin in the CORS response
+//   } else {
+//     callback(null, {origin: false}); // Deny CORS if not in whitelist
+//   }
+// };
+// app.use(cors(corsOptions));
 
 const corsOptions = (req, callback) => {
-  if (whitelist.indexOf(req.header("Origin")) !== -1) {
+  const whitelist = [process.env.FRONTEND_URL, process.env.DEPLOYED_FE_URL];
+
+  console.log("CORS Origin:", req.header("Origin")); // Debugging log
+
+  if (whitelist.includes(req.header("Origin"))) {
     callback(null, {
-      origin: req.header("Origin"), //// Automatically reflects the request's origin if in the whitelist
+      origin: req.header("Origin"),
       credentials: true,
-      methods: "GET,HEAD,PATCH,POST,PUT,DELETE",
-      allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    }); // reflect (enable) the requested origin in the CORS response
+      methods: "GET,HEAD,POST,PUT,DELETE,PATCH,OPTIONS",
+      allowedHeaders: ["Content-Type", "Authorization"],
+    });
   } else {
-    callback(null, {origin: false}); // Deny CORS if not in whitelist
+    callback(new Error("Not allowed by CORS"));
   }
 };
-app.use(cors(corsOptions));
 
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // Enable preflight for all routes
 
 // app.use(cors())
 
