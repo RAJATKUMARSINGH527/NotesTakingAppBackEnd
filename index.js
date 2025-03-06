@@ -249,28 +249,28 @@ const swaggerUi = require("swagger-ui-express");
 const app = express();
 const PORT = process.env.PORT || 8000;
 
-// ✅ Allowed Origins for CORS
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://notes-taking-app-front-end.vercel.app"
-];
+// // ✅ Allowed Origins for CORS
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "https://notes-taking-app-front-end.vercel.app"
+// ];
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-  methods: "GET,HEAD,OPTIONS,PATCH,POST,PUT,DELETE",
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-};
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+//   methods: "GET,HEAD,OPTIONS,PATCH,POST,PUT,DELETE",
+//   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+// };
 
 // ✅ Apply CORS
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Enable preflight requests globally
+// app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions)); // Enable preflight requests globally
 
 // ✅ Manually Handle CORS for Preflight Requests
 app.use((req, res, next) => {

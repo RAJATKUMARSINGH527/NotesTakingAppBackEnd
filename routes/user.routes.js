@@ -185,7 +185,8 @@ userRouter.post("/login", async (req, res) => {
       console.log("Invalid email or password!");  // ✅ Log this
       return res.status(400).json({ message: "Invalid email or password!" });
     }
-
+    
+    console.log("Generating Token...");
     const token = jwt.sign(
       { userId: matchingUser._id, user: matchingUser.name },
       process.env.SECRET_KEY,
