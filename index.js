@@ -54,33 +54,7 @@ const app = express();
 
 // Swagger route
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  
 
-
-
-
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.DEPLOYED_FE_URL,
-  "http://localhost:5173", // Ensure localhost is explicitly allowed
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log("Incoming Request Origin:", origin); // Debugging log
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("CORS Error: Not allowed"));
-    }
-  },
-  credentials: true,
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions)); // ✅ Apply CORS before any routes
-app.options("*", cors(corsOptions)); // ✅ Enable preflight requests globally
 
 
 //middleware to pass the request body
@@ -127,7 +101,23 @@ app.use(express.urlencoded({ extended: false }));
 //   credentials: true
 // }));
 
+const corsOptions = {
+  origin: function (origin, callback) {
+    const whitelist = [process.env.FRONTEND_URL, process.env.DEPLOYED_FE_URL];
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: "GET,HEAD,OPTIONS,PATCH,POST,PUT,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+};
 
+
+app.use(cors(corsOptions)); // ✅ Apply CORS before any routes
+app.options("*", cors(corsOptions)); // ✅ Enable preflight requests globally
 
 
 
