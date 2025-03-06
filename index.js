@@ -87,25 +87,48 @@ app.use(express.urlencoded({ extended: false })); //to pass the form data from t
 // };
 // app.use(cors(corsOptions));
 
-const corsOptions = (req, callback) => {
-  const whitelist = [process.env.FRONTEND_URL, process.env.DEPLOYED_FE_URL];
+// const corsOptions = (req, callback) => {
+//   const whitelist = [process.env.FRONTEND_URL, process.env.DEPLOYED_FE_URL];
 
-  console.log("CORS Origin:", req.header("Origin")); // Debugging log
+//   console.log("CORS Origin:", req.header("Origin")); // Debugging log
 
-  if (whitelist.includes(req.header("Origin"))) {
-    callback(null, {
-      origin: req.header("Origin"),
-      credentials: true,
-      methods: "GET,HEAD,POST,PUT,DELETE,PATCH,OPTIONS",
-      allowedHeaders: ["Content-Type", "Authorization"],
-    });
-  } else {
-    callback(new Error("Not allowed by CORS"));
-  }
+//   if (whitelist.includes(req.header("Origin"))) {
+//     callback(null, {
+//       origin: req.header("Origin"),
+//       credentials: true,
+//       methods: "GET,HEAD,POST,PUT,DELETE,PATCH,OPTIONS",
+//       allowedHeaders: ["Content-Type", "Authorization"],
+//     });
+//   } else {
+//     callback(new Error("Not allowed by CORS"));
+//   }
+// };
+
+// app.use(cors(corsOptions));
+// app.options("*", cors(corsOptions)); // Enable preflight for all routes
+const allowedOrigins = [
+  process.env.FRONTEND_URL, 
+  process.env.DEPLOYED_FE_URL, 
+  "http://localhost:5173" // Ensure localhost is explicitly allowed
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log("Origin:", origin); // Debugging - logs origin
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  allowedHeaders: ["Content-Type", "Authorization"]
 };
 
+// Use CORS middleware before defining routes
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // Enable preflight for all routes
+app.options("*", cors(corsOptions)); // Handle preflight requests
 
 // app.use(cors())
 
