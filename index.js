@@ -102,13 +102,13 @@ app.use(express.urlencoded({ extended: false }));
 
 
 
-app.use(cors({
-  origin: "*",
-  credentials: true
-}));
+// app.use(cors({
+//   origin: "*",
+//   credentials: true
+// }));
 
 
-// app.use(cors())
+app.use(cors())
 
 app.use('/notes', noteRouter);
 app.use('/users', userRouter);

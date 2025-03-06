@@ -79,7 +79,7 @@ const noteRouter = express.Router();
  *         description: Internal server error.
  */
 
-noteRouter.post('/',verifyToken,isUserBlocked, async(req, res) => {
+noteRouter.post('/createnotes',verifyToken,isUserBlocked, async(req, res) => {
   // const {title, description, userId, user} = req.body; // userId and user are automatically added by the authMiddleware 
   try{
     const newNote = new NoteModel(req.body);
