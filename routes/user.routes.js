@@ -138,35 +138,69 @@ userRouter.post("/", async (req, res) => {
  *         description: Internal server error.
  */
 
+// userRouter.post("/login", async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     // Check if the email exists in the database
+//     const matchingUser = await UserModel.findOne({ email });
+//     if (matchingUser){
+//       const isPasswordMatched = await bcrypt.compare(password, matchingUser.password);
+//       if (isPasswordMatched) {
+//         // If the password is correct, generate a token
+//         const token = jwt.sign(
+//           { userId: matchingUser._id ,user : matchingUser.name}, 
+//           process.env.SECRET_KEY,
+//           { expiresIn: "1h" } // Optional: Token expiration time
+//         );
+//         res
+//           .status(200)
+//           .json({ message: "You have been Successfully Logged in!", token });
+//       }else{
+//         res.status(400).json({ message: "Invalid email or password!" });
+//       }
+      
+//     }else{
+//       res.status(404).json({ message: "User not found!" });
+//     }
+//   } catch (err) {
+//     // console.error("Error during login:", err); // Log the error for debugging
+//     res.status(500).json({ message: "Internal server error", error: err.message });
+//   }
+// });
+
 userRouter.post("/login", async (req, res) => {
+  console.log("Login request received:", req.body); // ✅ Log request data
+
   const { email, password } = req.body;
   try {
-    // Check if the email exists in the database
     const matchingUser = await UserModel.findOne({ email });
-    if (matchingUser){
-      const isPasswordMatched = await bcrypt.compare(password, matchingUser.password);
-      if (isPasswordMatched) {
-        // If the password is correct, generate a token
-        const token = jwt.sign(
-          { userId: matchingUser._id ,user : matchingUser.name}, 
-          process.env.SECRET_KEY,
-          { expiresIn: "1h" } // Optional: Token expiration time
-        );
-        res
-          .status(200)
-          .json({ message: "You have been Successfully Logged in!", token });
-      }else{
-        res.status(400).json({ message: "Invalid email or password!" });
-      }
-      
-    }else{
-      res.status(404).json({ message: "User not found!" });
+
+    if (!matchingUser) {
+      console.log("User not found!");  // ✅ Log this
+      return res.status(404).json({ message: "User not found!" });
     }
+
+    const isPasswordMatched = await bcrypt.compare(password, matchingUser.password);
+    if (!isPasswordMatched) {
+      console.log("Invalid email or password!");  // ✅ Log this
+      return res.status(400).json({ message: "Invalid email or password!" });
+    }
+
+    const token = jwt.sign(
+      { userId: matchingUser._id, user: matchingUser.name },
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    console.log("Login successful! Token generated:", token);  // ✅ Log token
+    return res.status(200).json({ message: "You have been Successfully Logged in!", token });
+
   } catch (err) {
-    // console.error("Error during login:", err); // Log the error for debugging
-    res.status(500).json({ message: "Internal server error", error: err.message });
+    console.error("Error during login:", err);  // ✅ Log errors
+    return res.status(500).json({ message: "Internal server error", error: err.message });
   }
 });
+
 
 /**
  * @swagger
