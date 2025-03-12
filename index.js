@@ -1,70 +1,70 @@
-const express = require('express'); 
-const {connectToDB} = require('./config/db');
-const noteRouter = require('./routes/note.routes');
-const userRouter = require('./routes/user.routes');
-const cors = require('cors');
-require('dotenv').config();
+// const express = require('express'); 
+// const {connectToDB} = require('./config/db');
+// const noteRouter = require('./routes/note.routes');
+// const userRouter = require('./routes/user.routes');
+// const cors = require('cors');
+// require('dotenv').config();
 
-const swaggerJSDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+// const swaggerJSDoc = require('swagger-jsdoc');
+// const swaggerUi = require('swagger-ui-express');
 
-const app = express();
+// const app = express();
 
-// Swagger definition
-const swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "Express API for Notes and Users",
-    version: "1.0.0",
-    description:
-      "This is a REST API application made with Express. It manages users and notes for a custom application.",
-    license: {
-      name: "Licensed Under MIT",
-      url: "https://spdx.org/licenses/MIT.html",
-    },
-    contact: {
-      name: "API Support",
-      email: "support@example.com",
-    },
-  },
-  servers: [
-    {
-      url: "https://notestakingappbackend-wx6m.onrender.com", // ✅ Updated to production URL
-      description: "Production server",
-    },
-    {
-      url: "http://localhost:8000",
-      description: "Development server",
-    },
-  ],
-  components: {
-    securitySchemes: {
-      bearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-      },
-    },
-  },
-};
-// Swagger options
-const options = {
-    swaggerDefinition,
-    apis: ["./routes/*.js"], // Path to the routes for API definitions
-  };
+// // Swagger definition
+// const swaggerDefinition = {
+//   openapi: "3.0.0",
+//   info: {
+//     title: "Express API for Notes and Users",
+//     version: "1.0.0",
+//     description:
+//       "This is a REST API application made with Express. It manages users and notes for a custom application.",
+//     license: {
+//       name: "Licensed Under MIT",
+//       url: "https://spdx.org/licenses/MIT.html",
+//     },
+//     contact: {
+//       name: "API Support",
+//       email: "support@example.com",
+//     },
+//   },
+//   servers: [
+//     {
+//       url: "https://notestakingappbackend-wx6m.onrender.com", // ✅ Updated to production URL
+//       description: "Production server",
+//     },
+//     {
+//       url: "http://localhost:8000",
+//       description: "Development server",
+//     },
+//   ],
+//   components: {
+//     securitySchemes: {
+//       bearerAuth: {
+//         type: "http",
+//         scheme: "bearer",
+//         bearerFormat: "JWT",
+//       },
+//     },
+//   },
+// };
+// // Swagger options
+// const options = {
+//     swaggerDefinition,
+//     apis: ["./routes/*.js"], // Path to the routes for API definitions
+//   };
   
-const swaggerSpec = swaggerJSDoc(options);
+// const swaggerSpec = swaggerJSDoc(options);
 
-// Swagger route
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+// // Swagger route
+// app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 
-//middleware to pass the request body
-app.use(express.json());
+// //middleware to pass the request body
+// app.use(express.json());
 
- //to pass the form data from the frontend to the backend server 
-app.use(express.urlencoded({ extended: false }));
+//  //to pass the form data from the frontend to the backend server 
+// app.use(express.urlencoded({ extended: false }));
 
 
 
@@ -135,35 +135,83 @@ app.use(express.urlencoded({ extended: false }));
 //   })
 // );
 
-app.options('*', cors()); // Handle preflight for all routes
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "http://localhost:5174",
-        "https://notes-taking-app-front-end.vercel.app",
-      ];
-      if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-        callback(null, true);
-      } else {
-        console.log(`CORS rejected origin: ${origin}`);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// app.options('*', cors()); // Handle preflight for all routes
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       const allowedOrigins = [
+//         "http://localhost:5174",
+//         "https://notes-taking-app-front-end.vercel.app",
+//       ];
+//       if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+//         callback(null, true);
+//       } else {
+//         console.log(`CORS rejected origin: ${origin}`);
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 
 
 // app.use(cors())
 
+// app.use('/notes', noteRouter);
+// app.use('/users', userRouter);
+
+// const PORT = process.env.PORT || 8000;
+
+
+// app.listen(PORT, async () => {
+//   try {
+//     await connectToDB();
+//     console.log(`🚀 Server is running on http://localhost:${PORT}`);
+//   } catch (error) {
+//     console.error("Error:", error);
+//   }
+// });
+
+
+const express = require('express');
+const { connectToDB } = require('./config/db');
+const noteRouter = require('./routes/note.routes');
+const userRouter = require('./routes/user.routes');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+
+// CORS configuration
+app.use(cors({
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      "http://localhost:5174",
+      "https://notes-taking-app-front-end.vercel.app",
+    ];
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
+      callback(null, true);
+    } else {
+      console.log(`CORS rejected origin: ${origin}`);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Routes
 app.use('/notes', noteRouter);
 app.use('/users', userRouter);
 
 const PORT = process.env.PORT || 8000;
-
 
 app.listen(PORT, async () => {
   try {
