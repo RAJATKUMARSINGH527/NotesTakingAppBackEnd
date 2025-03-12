@@ -184,27 +184,34 @@ require('dotenv').config();
 
 const app = express();
 
-// Log all incoming requests
+// Log all incoming requests for debugging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} from Origin: ${req.headers.origin}`);
   next();
 });
 
-// Simplified CORS configuration
+// CORS configuration
 app.use(cors({
-  origin: "https://notes-taking-app-front-end.vercel.app", // Hardcode for now
-  credentials: true,
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      "http://localhost:5174", // Local development
+      "https://notes-taking-app-front-end.vercel.app", // Production frontend
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // Enable if you use cookies or auth tokens
 }));
 
-// Explicitly handle OPTIONS preflight
-app.options('*', cors(), (req, res) => {
-  console.log('Preflight OPTIONS request handled');
-  res.sendStatus(204); // No Content
-});
+// Handle preflight OPTIONS requests
+app.options('*', cors());
 
-// Body parsing
+// Middleware for parsing JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -212,9 +219,8 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/notes', noteRouter);
 app.use('/users', userRouter);
 
-// Test endpoint
+// Test endpoint to verify server is alive
 app.get('/test', (req, res) => {
-  console.log('Test endpoint hit');
   res.json({ message: 'Server is alive' });
 });
 
