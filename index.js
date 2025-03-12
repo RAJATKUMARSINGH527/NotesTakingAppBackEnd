@@ -115,12 +115,13 @@ app.use(
       const allowedOrigins = [
         "http://localhost:5174",
         "https://notes-taking-app-front-end.vercel.app",
+        "https://notestakingappbackend-wx6m.onrender.com"
       ];
-      // Allow all Netlify preview URLs and local development
+      // Allow all Vercel preview URLs and local development
       if (
         !origin || // Allow non-browser requests (e.g., Postman)
         allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app") // Allow Netlify preview deployments
+        origin.endsWith(".vercel.app") // Allow Vercel preview deployments
       ) {
         callback(null, true);
       } else {
