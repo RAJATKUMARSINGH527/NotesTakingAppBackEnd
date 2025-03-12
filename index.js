@@ -109,31 +109,53 @@ app.use(express.urlencoded({ extended: false }));
 
 
 
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       const allowedOrigins = [
+//         "http://localhost:5174",
+//         "https://notes-taking-app-front-end.vercel.app",
+//         "https://notestakingappbackend-wx6m.onrender.com"
+//       ];
+//       // Allow all Vercel preview URLs and local development
+//       if (
+//         !origin || // Allow non-browser requests (e.g., Postman)
+//         allowedOrigins.includes(origin) ||
+//         origin.endsWith(".vercel.app") // Allow Vercel preview deployments
+//       ) {
+//         callback(null, true);
+//       } else {
+//         console.log(`CORS rejected origin: ${origin}`);
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true, // Allow cookies/authorization headers
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Explicitly allow methods
+//     allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+//   })
+// );
+
+app.options('*', cors()); // Handle preflight for all routes
 app.use(
   cors({
     origin: (origin, callback) => {
       const allowedOrigins = [
         "http://localhost:5174",
         "https://notes-taking-app-front-end.vercel.app",
-        "https://notestakingappbackend-wx6m.onrender.com"
       ];
-      // Allow all Vercel preview URLs and local development
-      if (
-        !origin || // Allow non-browser requests (e.g., Postman)
-        allowedOrigins.includes(origin) ||
-        origin.endsWith(".vercel.app") // Allow Vercel preview deployments
-      ) {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
         callback(null, true);
       } else {
         console.log(`CORS rejected origin: ${origin}`);
         callback(new Error("Not allowed by CORS"));
       }
     },
-    credentials: true, // Allow cookies/authorization headers
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Explicitly allow methods
-    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 // app.use(cors())
 
