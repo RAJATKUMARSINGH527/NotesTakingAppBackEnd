@@ -184,32 +184,39 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS configuration
+// Log all incoming requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} from Origin: ${req.headers.origin}`);
+  next();
+});
+
+// Simplified CORS configuration
 app.use(cors({
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      "http://localhost:5174",
-      "https://notes-taking-app-front-end.vercel.app",
-    ];
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) {
-      callback(null, true);
-    } else {
-      console.log(`CORS rejected origin: ${origin}`);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: "https://notes-taking-app-front-end.vercel.app", // Hardcode for now
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-// Body parsing middleware
+// Explicitly handle OPTIONS preflight
+app.options('*', cors(), (req, res) => {
+  console.log('Preflight OPTIONS request handled');
+  res.sendStatus(204); // No Content
+});
+
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
 app.use('/notes', noteRouter);
 app.use('/users', userRouter);
+
+// Test endpoint
+app.get('/test', (req, res) => {
+  console.log('Test endpoint hit');
+  res.json({ message: 'Server is alive' });
+});
 
 const PORT = process.env.PORT || 8000;
 
