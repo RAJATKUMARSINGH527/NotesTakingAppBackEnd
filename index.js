@@ -108,7 +108,33 @@ app.use(express.urlencoded({ extended: false }));
 // }));
 
 
-app.use(cors())
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "http://localhost:5174",
+        "https://notes-taking-app-front-end.vercel.app",
+      ];
+      // Allow all Netlify preview URLs and local development
+      if (
+        !origin || // Allow non-browser requests (e.g., Postman)
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") // Allow Netlify preview deployments
+      ) {
+        callback(null, true);
+      } else {
+        console.log(`CORS rejected origin: ${origin}`);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true, // Allow cookies/authorization headers
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Explicitly allow methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Allow these headers
+  })
+);
+
+// app.use(cors())
 
 app.use('/notes', noteRouter);
 app.use('/users', userRouter);
