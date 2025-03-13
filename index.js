@@ -28,7 +28,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "https://notestakingappbackend-wx6m.onrender.com", // ✅ Updated to production URL
+      url: "https://notestakingappbackend-8t72.onrender.com", // ✅ Updated to production URL
       description: "Production server",
     },
     {
